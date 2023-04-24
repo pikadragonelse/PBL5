@@ -1,0 +1,7 @@
+.app-container {
+    display: flex;
+}
+
+.chart-container {
+    width: 400px;
+}
