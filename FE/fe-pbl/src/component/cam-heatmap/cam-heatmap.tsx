@@ -3,8 +3,6 @@ import './cam-heatmap.scss';
 import useWebSocket from 'react-use-websocket';
 import './cam-heatmap.scss';
 
-const WS_URL = 'ws://localhost:8765/';
-
 export const data = {
     datasets: [
         {
@@ -17,6 +15,8 @@ export const data = {
         },
     ],
 };
+
+const WS_URL = 'ws:/localhost:8765/get_frame';
 
 export const options = {
     plugins: {
@@ -32,7 +32,7 @@ export const options = {
         x: {
             type: 'realtime',
             realtime: {
-                delay: 5000,
+                delay: 2000,
                 onRefresh: (chart: any) => {
                     chart.data.datasets.forEach((dataset: any) => {
                         dataset.data.push({
@@ -43,7 +43,13 @@ export const options = {
                 },
             },
         },
-        y: {},
+        y: {
+            type: 'linear',
+            ticks: {
+                stepSize: 1,
+            },
+            beginAtZero: true,
+        },
     },
 };
 
@@ -70,26 +76,24 @@ export const CamHeatMap = () => {
     };
 
     useEffect(() => {
-        sendMessage(JSON.stringify('get_info'));
+        sendMessage(JSON.stringify('get_frame'));
         handleMessage();
         draw();
-        temp = message[2];
-        time = message[3];
+
+        temp = message[1];
+        time = message[2];
     }, [lastMessage]);
 
     const refCanvas = useRef<HTMLCanvasElement>(null);
     const refCanvas2 = useRef<HTMLCanvasElement>(null);
-    // const refCanvas3 = useRef<HTMLCanvasElement>(null);
 
     const context = refCanvas.current?.getContext('2d');
     const context2 = refCanvas2.current?.getContext('2d');
-    // const context3 = refCanvas3.current?.getContext('2d');
 
     const draw = () => {
-        if (refCanvas.current != null && context != null && context2 != null /*&& context3 != null*/) {
+        if (refCanvas.current != null && context != null && context2 != null) {
             const img = new Image();
             const img2 = new Image();
-            const img3 = new Image();
 
             img.onload = function () {
                 context.drawImage(img, 0, 0);
@@ -99,13 +103,7 @@ export const CamHeatMap = () => {
                 context2.drawImage(img2, 0, 0);
             };
 
-            // img3.onload = function () {
-            //     context3.drawImage(img3, 0, 0);
-            // };
-
             img.src = 'data:image;base64,' + message[0];
-            img2.src = 'data:image;base64,' + message[1];
-            // img3.src = 'data:image;base64,' + message[2];
         }
     };
 
@@ -114,19 +112,12 @@ export const CamHeatMap = () => {
             <canvas ref={refCanvas} id="canvas" width="640" height="480"></canvas>
             <canvas
                 className="canvas-stack-up"
-                style={{ opacity: '0.5', position: 'absolute', background: 'red' }}
+                style={{ opacity: '0.5', position: 'absolute' }}
                 ref={refCanvas2}
                 id="canvas2"
                 width="640"
                 height="480"
             ></canvas>
-            {/* <canvas
-                style={{ opacity: '0.5', position: 'absolute' }}
-                ref={refCanvas3}
-                id="canvas3"
-                width="640"
-                height="480"
-            ></canvas> */}
         </div>
     );
 };
