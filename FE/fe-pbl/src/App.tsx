@@ -25,18 +25,23 @@ export const firebaseConfig: any = {
 
 function App() {
     const [dataList, setDataList] = useState<any>([]);
+    const [frameList, setFrameList] = useState<any>([]);
+    const [num_people, setNumPeople] = useState<any>([]);
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
-    const dbRef = ref(db, '/');
+    const dbRef_data = ref(db, '/time');
+    const dbRef_frame = ref(db, '/frame');
 
     useEffect(() => {
-        onValue(dbRef, (snapshot) => {
+        onValue(dbRef_data, (snapshot) => {
             try {
                 if (
                     snapshot.exists() &&
                     Object.entries(snapshot.val()).toString() !== Object.entries(dataList).toString()
                 ) {
                     setDataList(snapshot.val());
+                    const data = Object.values(snapshot.exportVal());
+                    setNumPeople(data[data.length - 1]);
                 } else {
                     console.log('No data available');
                 }
@@ -45,6 +50,23 @@ function App() {
             }
         });
     }, [Object.entries(dataList).toString()]);
+
+    useEffect(() => {
+        onValue(dbRef_frame, (snapshot) => {
+            try {
+                if (
+                    snapshot.exists() &&
+                    Object.entries(snapshot.val()).toString() !== Object.entries(frameList).toString()
+                ) {
+                    setFrameList(snapshot.val());
+                } else {
+                    console.log('No data available');
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        });
+    }, [Object.entries(frameList).toString()]);
 
     const handleHistogramData = (dataRaw: any) => {
         const newDataList: any = [];
@@ -61,14 +83,12 @@ function App() {
             newDataList.push({ x: key, y: flagKey[key] });
         }
 
-        console.log(newDataList);
-
         return newDataList;
     };
 
     const dataset = [
         {
-            label: 'Số lượng người xuất hiện trong khung hình',
+            label: 'Số lần xuất hiện trong khung hình',
             data: handleHistogramData(dataList),
             backgroundColor: '#90c5f9',
             borderWidth: 1,
@@ -81,7 +101,7 @@ function App() {
         <div className="app-container">
             <div className="main-content">
                 <div className="container-stream">
-                    <CamHeatMap />
+                    <CamHeatMap frame={frameList[frameList.length - 1]} num_people={num_people} />
                 </div>
                 <div className="chart-container">
                     <Stream data={data} options={options} />

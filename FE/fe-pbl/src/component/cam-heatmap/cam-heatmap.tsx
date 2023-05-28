@@ -36,7 +36,7 @@ export const options = {
                 onRefresh: (chart: any) => {
                     chart.data.datasets.forEach((dataset: any) => {
                         dataset.data.push({
-                            x: Date.parse(time),
+                            x: Date.now(),
                             y: temp,
                         });
                     });
@@ -55,34 +55,37 @@ export const options = {
 
 let temp: number = 0;
 let time: any = '';
-
-export const CamHeatMap = () => {
-    const [message, setMessage] = useState<any>('');
-
-    const { lastMessage, sendMessage } = useWebSocket(WS_URL, {
-        onOpen: () => {
-            console.log('WebSocket connection established.');
-        },
-    });
-
-    const parseToArray = (object: any) => {
-        return Object.values(object);
-    };
-
-    const handleMessage = () => {
-        if (lastMessage != null) {
-            setMessage(parseToArray(JSON.parse(lastMessage.data)));
-        }
-    };
-
+export type CamHeatMap = { frame: string; num_people: any };
+export const CamHeatMap = ({ frame, num_people }: CamHeatMap) => {
     useEffect(() => {
-        sendMessage(JSON.stringify('get_frame'));
-        handleMessage();
+        temp = num_people;
         draw();
+    }, [num_people, frame]);
 
-        temp = message[1];
-        time = message[2];
-    }, [lastMessage]);
+    // const { lastMessage, sendMessage } = useWebSocket(WS_URL, {
+    //     onOpen: () => {
+    //         console.log('WebSocket connection established.');
+    //     },
+    // });
+
+    // const parseToArray = (object: any) => {
+    //     return Object.values(object);
+    // };
+
+    // const handleMessage = () => {
+    //     if (lastMessage != null) {
+    //         setMessage(parseToArray(JSON.parse(lastMessage.data)));
+    //     }
+    // };
+
+    // useEffect(() => {
+    //     sendMessage(JSON.stringify('get_frame'));
+    //     handleMessage();
+    //     draw();
+
+    //     temp = message[1];
+    //     time = message[2];
+    // }, [lastMessage]);
 
     const refCanvas = useRef<HTMLCanvasElement>(null);
     const refCanvas2 = useRef<HTMLCanvasElement>(null);
@@ -103,7 +106,7 @@ export const CamHeatMap = () => {
                 context2.drawImage(img2, 0, 0);
             };
 
-            img.src = 'data:image;base64,' + message[0];
+            img.src = 'data:image;base64,' + frame;
         }
     };
 
