@@ -16,7 +16,7 @@ export const data = {
     ],
 };
 
-const WS_URL = 'ws:/localhost:8765/get_frame';
+const WS_URL = 'ws://14.241.123.147:8765/get_frame';
 
 export const options = {
     plugins: {
@@ -54,37 +54,34 @@ export const options = {
 };
 
 let temp: number = 0;
-let time: any = '';
 export type CamHeatMap = { frame: string; num_people: any };
 export const CamHeatMap = ({ frame, num_people }: CamHeatMap) => {
+    const [message, setMessage] = useState<any>();
     useEffect(() => {
         temp = num_people;
         draw();
     }, [num_people, frame]);
 
-    // const { lastMessage, sendMessage } = useWebSocket(WS_URL, {
-    //     onOpen: () => {
-    //         console.log('WebSocket connection established.');
-    //     },
-    // });
+    const { lastMessage, sendMessage } = useWebSocket(WS_URL, {
+        onOpen: () => {
+            console.log('WebSocket connection established.');
+        },
+    });
 
-    // const parseToArray = (object: any) => {
-    //     return Object.values(object);
-    // };
+    const parseToArray = (object: any) => {
+        return Object.values(object);
+    };
 
-    // const handleMessage = () => {
-    //     if (lastMessage != null) {
-    //         setMessage(parseToArray(JSON.parse(lastMessage.data)));
-    //     }
-    // };
+    const handleMessage = () => {
+        if (lastMessage != null) {
+            setMessage(parseToArray(JSON.parse(lastMessage.data)));
+        }
+    };
 
     // useEffect(() => {
     //     sendMessage(JSON.stringify('get_frame'));
     //     handleMessage();
     //     draw();
-
-    //     temp = message[1];
-    //     time = message[2];
     // }, [lastMessage]);
 
     const refCanvas = useRef<HTMLCanvasElement>(null);

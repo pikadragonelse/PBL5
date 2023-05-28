@@ -25,7 +25,7 @@ export const firebaseConfig: any = {
 
 function App() {
     const [dataList, setDataList] = useState<any>([]);
-    const [frameList, setFrameList] = useState<any>([]);
+    const [frame, setFrame] = useState<any>([]);
     const [num_people, setNumPeople] = useState<any>([]);
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
@@ -43,7 +43,6 @@ function App() {
                     const data = Object.values(snapshot.exportVal());
                     setNumPeople(data[data.length - 1]);
                 } else {
-                    console.log('No data available');
                 }
             } catch (error) {
                 console.log(error);
@@ -56,17 +55,16 @@ function App() {
             try {
                 if (
                     snapshot.exists() &&
-                    Object.entries(snapshot.val()).toString() !== Object.entries(frameList).toString()
+                    Object.entries(snapshot.val()).toString() !== Object.entries(frame).toString()
                 ) {
-                    setFrameList(snapshot.val());
+                    setFrame(snapshot.val());
                 } else {
-                    console.log('No data available');
                 }
             } catch (error) {
                 console.log(error);
             }
         });
-    }, [Object.entries(frameList).toString()]);
+    }, [Object.entries(frame).toString()]);
 
     const handleHistogramData = (dataRaw: any) => {
         const newDataList: any = [];
@@ -101,7 +99,7 @@ function App() {
         <div className="app-container">
             <div className="main-content">
                 <div className="container-stream">
-                    <CamHeatMap frame={frameList[frameList.length - 1]} num_people={num_people} />
+                    <CamHeatMap frame={frame} num_people={num_people} />
                 </div>
                 <div className="chart-container">
                     <Stream data={data} options={options} />
