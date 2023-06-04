@@ -97,17 +97,23 @@ function App() {
 
     return (
         <div className="app-container">
+            <h1 className="header">System Management</h1>
             <div className="main-content">
                 <div className="container-stream">
                     <CamHeatMap frame={frame} num_people={num_people} />
+                    <div className="button-control-container">
+                        <button className="btn-control btn-1">Turn left</button>
+                        <button className="btn-control btn-2">Turn right</button>
+                    </div>
                 </div>
-                <div className="chart-container">
-                    <Stream data={data} options={options} />
+                <div className="graph">
+                    <div className="chart-container">
+                        <Stream data={data} options={options} />
+                    </div>
+                    <div className="histogram-container">
+                        <Histogram title="Mật độ người xuất hiện trong khung hình" datasets={dataset} />
+                    </div>
                 </div>
-            </div>
-
-            <div className="histogram-container">
-                <Histogram title="Mật độ người xuất hiện trong khung hình" datasets={dataset} />
             </div>
         </div>
     );
