@@ -15,6 +15,12 @@ export type Header = { scrollTop?: number };
 export const Header = ({ scrollTop }: Header) => {
     const [isBackground, setIsBackground] = useState<boolean>(false);
     const [location, setLocation] = useState<string>('');
+    const [isClick, setIsClick] = useState<boolean>(false);
+
+    const handleOnClick = (event: any) => {
+        setLocation(event.currentTarget.id);
+        setIsClick(true);
+    };
 
     const handleScrollPage = (scrollTop: number) => {
         if (scrollTop > 50) {
@@ -22,15 +28,39 @@ export const Header = ({ scrollTop }: Header) => {
         } else {
             setIsBackground(false);
         }
+        if (isClick === false) {
+            if (scrollTop < 700) {
+                setLocation('0');
+            }
+
+            if (scrollTop >= 700 && scrollTop < 900) {
+                setLocation('1');
+            }
+
+            if (scrollTop >= 1300 && scrollTop < 1500) {
+                setLocation('2');
+            }
+
+            if (scrollTop >= 2000 && scrollTop < 2300) {
+                setLocation('3');
+            }
+
+            if (scrollTop >= 2600) {
+                setLocation('4');
+            }
+        }
     };
 
     useEffect(() => {
         window.addEventListener('scroll', () => handleScrollPage(window.pageYOffset));
-
+        const timer = setTimeout(() => {
+            setIsClick(false);
+        }, 5000);
         return () => {
             window.removeEventListener('scroll', () => {});
+            clearTimeout(timer);
         };
-    }, []);
+    }, [isClick]);
 
     return (
         <header className={`header ${isBackground === true ? 'background' : ''}`}>
@@ -45,7 +75,7 @@ export const Header = ({ scrollTop }: Header) => {
                             href="#cam-view"
                             className="link-section"
                             onClick={(event) => {
-                                setLocation(event.currentTarget.id);
+                                handleOnClick(event);
                             }}
                         >
                             Cam View
@@ -57,7 +87,7 @@ export const Header = ({ scrollTop }: Header) => {
                             href="#graph"
                             className="link-section"
                             onClick={(event) => {
-                                setLocation(event.currentTarget.id);
+                                handleOnClick(event);
                             }}
                         >
                             Graph
@@ -69,7 +99,7 @@ export const Header = ({ scrollTop }: Header) => {
                             href="#synthetic"
                             className="link-section"
                             onClick={(event) => {
-                                setLocation(event.currentTarget.id);
+                                handleOnClick(event);
                             }}
                         >
                             Synthetic
@@ -81,7 +111,7 @@ export const Header = ({ scrollTop }: Header) => {
                             className="link-section"
                             id="4"
                             onClick={(event) => {
-                                setLocation(event.currentTarget.id);
+                                handleOnClick(event);
                             }}
                         >
                             About Us
