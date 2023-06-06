@@ -1,0 +1,133 @@
+.header {
+    display: flex;
+    position: fixed;
+    top: 0;
+    align-items: center;
+    width: 100%;
+    justify-content: space-between;
+    height: 90px;
+    margin: 0;
+    padding: 20px 0;
+    transition: all 0.2s ease; 
+    
+    .logo-container{
+        --size-img: 200px;
+        width: var(--size-img);
+        height: var(--size-img);
+        margin-left: 42px;
+    }
+    
+    .logo {
+        width: 100%;
+    }
+    
+    .nav-list {
+        list-style: none;
+        margin: 0;
+        display: flex;
+        gap: 80px;
+        font-size: 1.2rem;
+        padding: 0;
+        margin-right: 65px;
+        align-items: center;
+        transition: all 0.1s ease;
+    }
+    
+    .config {
+        margin-right: 95px;
+    }
+    
+    .setting-icon {
+        --size-icon: 20px;
+        width: var(--size-icon);
+        height: var(--size-icon);
+        transition: all 0.2s ease;
+        cursor: pointer;
+    }
+
+    .setting-icon:hover {
+        rotate: (90deg);
+    }
+    
+    .nav-item {
+        cursor: pointer;
+        transition: all 0.2s ease;
+        min-width: max-content;
+        width: 100px;
+        text-align: center;
+        border-top: transparent;
+        border-bottom: transparent;
+        padding: 5px 0;
+        line-height: 1;
+        position: relative;
+        display: block;
+        
+    }
+
+    .link-section {
+        text-decoration: none;
+        color: black;
+    }
+
+    .nav-item:hover {
+        letter-spacing: 2px;
+    }
+
+    .nav-item::before {
+        content: "";
+        width: 100%;
+        scale: 0;
+        position: absolute;
+        top: 0;
+        left: 0;
+        border-top: 1px solid #000;
+        transition: all 0.2s ease;
+        text-align: center;
+    }
+
+    .nav-item::after {
+        content: "";
+        scale: 0;
+        width: 100%;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        border-top: 1px solid #000;
+        transition: all 0.2s ease;
+    }
+
+    .nav-item:hover.nav-item::before {
+        scale: 1;
+    }
+
+    .nav-item:hover.nav-item::after {
+        scale: 1;
+    }
+    
+}
+
+.header.background {
+    background-color: #2c2c2ca3;
+    backdrop-filter: blur(2px);
+    z-index: 999;
+}
+
+.background .setting-icon {
+    color: #fff;
+}
+
+.background .nav-list .link-section {
+    color: #fff;
+}
+
+.background .nav-item:hover.nav-item::before {
+    scale: 1;
+    border-top: 1px solid #ffffff;
+}
+
+.background .nav-item:hover.nav-item::after {
+    scale: 1;
+    border-top: 1px solid #ffffff;
+}
+
+

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import './App.scss';
 
 import { CamHeatMap, data, options } from './component/cam-heatmap/cam-heatmap';
@@ -6,6 +6,12 @@ import { Stream } from './component/line-chart-realtime';
 import { Histogram } from './component/histogram';
 import { initializeApp } from 'firebase/app';
 import { getDatabase, ref, get, onValue } from 'firebase/database';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowDown, faArrowLeft, faArrowRight, faArrowUp } from '@fortawesome/free-solid-svg-icons';
+import { Header } from './component/header';
+import { Landing } from './component/landing';
+import { AboutUs } from './component/about-us';
+import { Footer } from './component/footer';
 
 export const firebaseConfig: any = {
     type: 'service_account',
@@ -95,25 +101,81 @@ function App() {
         },
     ];
 
+    const appRef = useRef<HTMLDivElement>(null);
+
     return (
-        <div className="app-container">
-            <h1 className="header">System Management</h1>
+        <div ref={appRef} className="app-container">
+            <Header />
             <div className="main-content">
-                <div className="container-stream">
-                    <CamHeatMap frame={frame} num_people={num_people} />
-                    <div className="button-control-container">
-                        <button className="btn-control btn-1">Turn left</button>
-                        <button className="btn-control btn-2">Turn right</button>
+                <Landing />
+                <section id="cam-view" className="cam-section">
+                    <div className="container-stream">
+                        <div className="button-control-container">
+                            <button className="btn-control btn-1 btn-top">
+                                <FontAwesomeIcon icon={faArrowUp} />
+                            </button>
+                            <div className="sub-container">
+                                <button className="btn-control btn-2 btn-left">
+                                    <FontAwesomeIcon icon={faArrowLeft} />
+                                </button>
+                                <button className="btn-control btn-2 btn-right">
+                                    <FontAwesomeIcon icon={faArrowRight} />
+                                </button>
+                            </div>
+                            <button className="btn-control btn-1 btn-bottom">
+                                <FontAwesomeIcon icon={faArrowDown} />
+                            </button>
+                        </div>
+                        <div className="cam-container">
+                            <CamHeatMap frame={frame} num_people={num_people} />
+                        </div>
                     </div>
-                </div>
-                <div className="graph">
+                    <div className="content">
+                        <h2 className="heading-cam">Camera Control</h2>
+                        <p className="desc">
+                            With IoT system, the observation system is designed from 1 camera and 2 servo motors. From
+                            there, we can admire the entire area where the camera is located.
+                        </p>
+                    </div>
+                </section>
+
+                <section id="graph" className="graph">
+                    <div className="content">
+                        <h2 className="heading-chart">Data visualization</h2>
+                        <p className="desc">
+                            The data of the system is visualized into graphs. This makes it easy for the user to observe
+                            the change of the area. Not only that, these are also real-time charts, which will make the
+                            data more vivid than ever.
+                        </p>
+                    </div>
                     <div className="chart-container">
-                        <Stream data={data} options={options} />
+                        <div className="stream-container">
+                            <Stream data={data} options={options} />
+                        </div>
+                        <div className="histogram-container">
+                            <Histogram title="Mật độ người xuất hiện trong khung hình" datasets={dataset} />
+                        </div>
                     </div>
-                    <div className="histogram-container">
-                        <Histogram title="Mật độ người xuất hiện trong khung hình" datasets={dataset} />
+                </section>
+
+                <section id="synthetic" className="mix-container">
+                    <h1 className="heading-mix">Synthetic</h1>
+                    <div className="mix">
+                        <div className="cam-container">
+                            <CamHeatMap frame={frame} num_people={num_people} />
+                        </div>
+                        <div className="chart-container">
+                            <div className="stream-container">
+                                <Stream data={data} options={options} />
+                            </div>
+                            <div className="histogram-container">
+                                <Histogram title="Mật độ người xuất hiện trong khung hình" datasets={dataset} />
+                            </div>
+                        </div>
                     </div>
-                </div>
+                </section>
+                <AboutUs />
+                <Footer />
             </div>
         </div>
     );

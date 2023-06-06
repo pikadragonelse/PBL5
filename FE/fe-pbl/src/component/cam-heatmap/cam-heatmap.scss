@@ -1,6 +1,8 @@
 .cam-heatmap-container {
     display: flex;
     position: 'relative';
+    border-radius: 10px;
+    overflow: hidden;
 }
 
 .canvas-stack-up {

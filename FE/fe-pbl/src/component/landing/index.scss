@@ -1,0 +1,27 @@
+.landing {
+    width: auto;
+    border-radius: 20px;
+    overflow: hidden;
+    height: 600px;
+    background-repeat: no-repeat;
+    background-size: cover;
+    display: flex;
+    padding: 0 50px;
+    align-items: center;
+    margin: 0 90px;
+
+    .content {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        color: white;
+        width: 400px;
+        height: 300px;
+        background-color: #9d9d9d64;
+        backdrop-filter: blur(4px);
+        padding: 0 20px;
+        border-radius: 10px;
+    }
+}
+
+

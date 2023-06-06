@@ -16,7 +16,7 @@ export const data = {
     ],
 };
 
-const WS_URL = 'ws://localhost:8765/get_frame';
+const WS_URL = 'ws://0.tcp.ap.ngrok.io:16081/get_frame';
 
 export const options = {
     plugins: {
@@ -49,6 +49,7 @@ export const options = {
                 stepSize: 1,
             },
             beginAtZero: true,
+            color: 'white',
         },
     },
 };
@@ -78,6 +79,8 @@ export const CamHeatMap = ({ frame, num_people }: CamHeatMap) => {
         sendMessage(JSON.stringify('get_frame'));
         handleMessage();
         draw();
+        console.log(message[2]);
+
         temp = message[1];
     }, [lastMessage]);
 
@@ -103,6 +106,10 @@ export const CamHeatMap = ({ frame, num_people }: CamHeatMap) => {
             img.src = 'data:image;base64,' + message[0];
         }
     };
+    if (refCanvas.current != null && context != null && context2 != null) {
+        context.fillStyle = '#7d7d7d4e';
+        context.fillRect(0, 0, refCanvas.current?.width, refCanvas.current?.height);
+    }
 
     return (
         <div className="cam-heatmap-container">
@@ -114,6 +121,7 @@ export const CamHeatMap = ({ frame, num_people }: CamHeatMap) => {
                 id="canvas2"
                 width="560"
                 height="420"
+                color="#fff"
             ></canvas>
         </div>
     );

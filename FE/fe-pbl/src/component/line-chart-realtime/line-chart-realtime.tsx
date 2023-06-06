@@ -5,7 +5,17 @@ import { CategoryScale, Chart, LinearScale, PointElement, LineElement, Title, Le
 import { StreamingPlugin, RealTimeScale } from 'chartjs-plugin-streaming';
 import 'chartjs-adapter-luxon';
 
-Chart.register(CategoryScale, LinearScale, PointElement, LineElement, RealTimeScale, StreamingPlugin, Title, Legend, Tooltip);
+Chart.register(
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    RealTimeScale,
+    StreamingPlugin,
+    Title,
+    Legend,
+    Tooltip,
+);
 
 export type Stream = { data: any; options: any };
 
