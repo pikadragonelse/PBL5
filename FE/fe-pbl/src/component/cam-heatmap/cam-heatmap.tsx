@@ -16,7 +16,7 @@ export const data = {
     ],
 };
 
-const WS_URL = 'ws://localhost:8765/get_frame';
+const WS_URL = 'ws://0.tcp.ap.ngrok.io:11866/get_frame';
 
 export const options = {
     plugins: {
@@ -106,14 +106,14 @@ export const CamHeatMap = ({ frame, num_people }: CamHeatMap) => {
 
     return (
         <div className="cam-heatmap-container">
-            <canvas ref={refCanvas} id="canvas" width="560" height="420"></canvas>
+            <canvas ref={refCanvas} id="canvas" width="1920" height="1080"></canvas>
             <canvas
                 className="canvas-stack-up"
                 style={{ opacity: '0.5', position: 'absolute' }}
                 ref={refCanvas2}
                 id="canvas2"
-                width="560"
-                height="420"
+                width="1920"
+                height="1080"
             ></canvas>
         </div>
     );
