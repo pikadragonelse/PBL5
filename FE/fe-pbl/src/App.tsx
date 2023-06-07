@@ -13,6 +13,7 @@ import { Landing } from './component/landing';
 import { AboutUs } from './component/about-us';
 import { Footer } from './component/footer';
 import { BarChart } from './component/bar-chart';
+import { motion } from 'framer-motion';
 
 export const firebaseConfig: any = {
     type: 'service_account',
@@ -144,7 +145,14 @@ function App() {
             <Header className={`${isFullScreen ? 'hide' : ''}`} />
             <div className="main-content">
                 <Landing />
-                <section id="cam-view" className={`cam-section ${isFullScreen ? 'show' : ''}`}>
+                <motion.section
+                    initial={{ opacity: 0, x: -200 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.4, type: 'spring' }}
+                    id="cam-view"
+                    className={`cam-section ${isFullScreen ? 'show' : ''}`}
+                >
                     <div className="container-stream">
                         <div className="button-control-container">
                             <button className="btn-control btn-1 btn-top">
@@ -179,10 +187,26 @@ function App() {
                             Full screen
                         </button>
                     </div>
-                </section>
+                </motion.section>
 
-                <section id="graph" className={`graph ${isFullScreen ? 'show' : ''}`}>
-                    <div className="content">
+                <motion.section
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    viewport={{ once: true }}
+                    id="graph"
+                    className={`graph ${isFullScreen ? 'show' : ''}`}
+                >
+                    <motion.div
+                        drag
+                        dragConstraints={{
+                            top: -5,
+                            left: -5,
+                            right: 5,
+                            bottom: 5,
+                        }}
+                        dragElastic={0.2}
+                        className="content"
+                    >
                         <h2 className="heading-chart">Data visualization</h2>
                         <p className="desc">
                             The data of the system is visualized into graphs. This makes it easy for the user to observe
@@ -192,8 +216,8 @@ function App() {
                         <button className="btn-full-size" onClick={() => setIsFullScreen(true)}>
                             Full screen
                         </button>
-                    </div>
-                    <div className={`chart-container chart-container-main ${isFullScreen ? 'show' : ''}`}>
+                    </motion.div>
+                    <motion.div className={`chart-container chart-container-main ${isFullScreen ? 'show' : ''}`}>
                         <div className="stream-container">
                             <Stream data={data} options={options} />
                         </div>
@@ -203,14 +227,21 @@ function App() {
                         <div className="bar-container">
                             <BarChart data={dataBar} options={optionBar} />
                         </div>
-                    </div>
+                    </motion.div>
 
                     <button className="btn-full-size btn-cam" onClick={() => setIsFullScreen(false)}>
                         Out full screen
                     </button>
-                </section>
+                </motion.section>
 
-                <section id="synthetic" className={`mix-container ${isFullScreen ? 'show' : ''}`}>
+                <motion.section
+                    initial={{ opacity: 0, x: 200 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.4 }}
+                    id="synthetic"
+                    className={`mix-container ${isFullScreen ? 'show' : ''}`}
+                >
                     <h1 className="heading-mix">Synthetic</h1>
                     <div className="mix">
                         <div className="cam-container">
@@ -225,7 +256,7 @@ function App() {
                             </div>
                         </div>
                     </div>
-                </section>
+                </motion.section>
                 <AboutUs />
                 <Footer />
             </div>
