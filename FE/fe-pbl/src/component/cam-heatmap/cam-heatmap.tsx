@@ -116,7 +116,7 @@ export const CamHeatMap = ({ frame, num_people, fullScreen }: CamHeatMap) => {
             <canvas ref={refCanvas} id="canvas" className="canvas-1"></canvas>
             <canvas
                 className="canvas-stack-up canvas-2"
-                style={{ opacity: '0.5', position: 'absolute' }}
+                style={{ position: 'absolute' }}
                 ref={refCanvas2}
                 id="canvas2"
             ></canvas>
