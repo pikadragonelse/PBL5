@@ -26,6 +26,10 @@ section {
     gap: 30px;
     overflow: auto;
     justify-content: center;
+
+    .hide {
+        opacity: 0;
+    }
 }
 
 .main-content {
@@ -160,8 +164,7 @@ section {
     background-color: #202020;
     border-radius: 20px;
     padding: 0 50px;
-
-
+    position: relative;
 
     .content {
         width: 400px;
@@ -171,7 +174,28 @@ section {
         color: #fff;
         box-shadow: 2px 2px 10px #8e8e8e;
     }
+
+    .stream-container {
+        position: absolute;
+        width: 350px;
+        align-self: flex-start;
+        left: 20px;
+        transition: all 0.4s ease;
+    }
     
+    .histogram-container {
+        position: absolute;
+        width: 350px;
+        align-self: flex-end;
+        bottom: 20px;
+        right: 20px;
+        transition: all 0.4s ease;
+    }
+    .chart-container {
+        right: 50px;
+        top: 100px;
+        position: absolute;
+    }
 }
 
 .chart-container {
@@ -183,6 +207,8 @@ section {
     flex-direction: column;
     justify-content: space-between;
     padding: 20px;
+    transition: all 0.4s ease-in-out;
+
 }
 
 .stream-container {
@@ -221,7 +247,7 @@ section {
             align-items: center;
             background-color: unset;
             padding: 0;
-
+            position: relative;
         }
     
         .stream-container {
@@ -285,9 +311,15 @@ section.cam-section.show .container-stream{
     transition: all 0.5s ease;
 }
 
-.cam-section.show .btn-cam {
+.cam-section.show .btn-cam, .graph.show .btn-cam {
     display: block;
     opacity: 1;
+}
+
+
+.graph .btn-cam {
+    left: 50px;
+    top: 30px;
 }
 
 section.graph.show{
@@ -298,6 +330,37 @@ section.graph.show{
     z-index: 99999;
     background-color: #f8f8f8;
     border-radius: 10px;
+}
+
+.chart-container-main.show {
+    top: 100px;
+    right: 120px;
+    width: 1100px;  
+    height: 450px;
+}
+
+.bar-container {
+    position: absolute;
+    width: 400px;
+    opacity: 0;
+    transition: all 0.4s ease;
+    left: 0;
+    bottom: 20px;
+}
+
+.graph.show .stream-container {
+    left: 400px;
+}
+
+.graph.show .histogram-container{
+    position: absolute;
+    bottom: 20px;
+    right: 100px;
+}
+
+.graph.show .bar-container {
+    opacity: 1;
+    left: 100px;
 }
 
 

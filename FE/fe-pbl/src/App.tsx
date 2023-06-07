@@ -12,6 +12,7 @@ import { Header } from './component/header';
 import { Landing } from './component/landing';
 import { AboutUs } from './component/about-us';
 import { Footer } from './component/footer';
+import { BarChart } from './component/bar-chart';
 
 export const firebaseConfig: any = {
     type: 'service_account',
@@ -27,6 +28,27 @@ export const firebaseConfig: any = {
     client_x509_cert_url:
         'https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-9apax%40realtime-crud-e8421.iam.gserviceaccount.com',
     databaseURL: 'https://realtime-crud-e8421-default-rtdb.asia-southeast1.firebasedatabase.app/',
+};
+
+const optionBar: any = {
+    plugins: {
+        legend: {
+            position: 'top' as const,
+        },
+        title: {
+            display: true,
+            text: 'Số lượng xuất hiện trong khu vực theo giờ',
+        },
+    },
+    scales: {
+        x: {
+            type: 'linear',
+            ticks: {
+                stepSize: 1,
+            },
+        },
+        y: {},
+    },
 };
 
 function App() {
@@ -93,7 +115,7 @@ function App() {
 
     const dataset = [
         {
-            label: 'Số lần xuất hiện trong khung hình',
+            label: 'Số lần xuất hiện',
             data: handleHistogramData(dataList),
             backgroundColor: '#90c5f9',
             borderWidth: 1,
@@ -102,12 +124,24 @@ function App() {
         },
     ];
 
+    const datasetBar = [
+        {
+            label: 'Số lần xuất hiện trong khung hình',
+            data: handleHistogramData(dataList),
+            backgroundColor: '#f1fd4c',
+        },
+    ];
+
+    const dataBar = {
+        datasets: datasetBar,
+    };
+
     const appRef = useRef<HTMLDivElement>(null);
 
     return (
         <div ref={appRef} className="app-container">
             <div className={`overlay ${isFullScreen ? 'show' : ''}`}></div>
-            <Header />
+            <Header className={`${isFullScreen ? 'hide' : ''}`} />
             <div className="main-content">
                 <Landing />
                 <section id="cam-view" className={`cam-section ${isFullScreen ? 'show' : ''}`}>
@@ -155,15 +189,25 @@ function App() {
                             the change of the area. Not only that, these are also real-time charts, which will make the
                             data more vivid than ever.
                         </p>
+                        <button className="btn-full-size" onClick={() => setIsFullScreen(true)}>
+                            Full screen
+                        </button>
                     </div>
-                    <div className={`chart-container ${isFullScreen ? 'show' : ''}`}>
+                    <div className={`chart-container chart-container-main ${isFullScreen ? 'show' : ''}`}>
                         <div className="stream-container">
                             <Stream data={data} options={options} />
                         </div>
                         <div className="histogram-container">
                             <Histogram title="Mật độ người xuất hiện trong khung hình" datasets={dataset} />
                         </div>
+                        <div className="bar-container">
+                            <BarChart data={dataBar} options={optionBar} />
+                        </div>
                     </div>
+
+                    <button className="btn-full-size btn-cam" onClick={() => setIsFullScreen(false)}>
+                        Out full screen
+                    </button>
                 </section>
 
                 <section id="synthetic" className={`mix-container ${isFullScreen ? 'show' : ''}`}>

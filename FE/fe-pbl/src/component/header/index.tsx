@@ -11,8 +11,8 @@ const navMap = {
     4: 'active-about',
 };
 
-export type Header = { scrollTop?: number };
-export const Header = ({ scrollTop }: Header) => {
+export type Header = { scrollTop?: number; className?: string };
+export const Header = ({ scrollTop, className }: Header) => {
     const [isBackground, setIsBackground] = useState<boolean>(false);
     const [location, setLocation] = useState<string>('');
     const [isClick, setIsClick] = useState<boolean>(false);
@@ -64,7 +64,7 @@ export const Header = ({ scrollTop }: Header) => {
     }, [isClick]);
 
     return (
-        <header className={`header ${isBackground === true ? 'background' : ''}`}>
+        <header className={`header ${isBackground === true ? 'background' : ''} ${className}`}>
             <div className="logo-container">
                 <img src={process.env.PUBLIC_URL + '/tobotic.png'} alt="" className="logo" />
             </div>
