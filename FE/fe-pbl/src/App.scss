@@ -71,8 +71,8 @@ section {
         padding: 40px;
         border-radius: 10px;
         margin-right: 50px;
-
-
+        position: absolute;
+        right: 0;
     }
     
     .heading-cam {
@@ -282,7 +282,7 @@ section.cam-section.show {
 section.cam-section.show .container-stream{
     z-index: 99999;
     position: relative;
-    left: 250px;
+    left: 90px;
 }
 
 .btn-full-size {
@@ -306,7 +306,7 @@ section.cam-section.show .container-stream{
     position: absolute;
     z-index: 99999;
     right: 0;
-    top: 0;
+    top: -90px;
     opacity: 0;
     transition: all 0.5s ease;
 }
@@ -350,12 +350,14 @@ section.graph.show{
 
 .graph.show .stream-container {
     left: 400px;
+    width: 400px;
 }
 
 .graph.show .histogram-container{
     position: absolute;
     bottom: 20px;
     right: 100px;
+    width: 400px;
 }
 
 .graph.show .bar-container {

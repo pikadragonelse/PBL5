@@ -37,7 +37,7 @@ const optionBar: any = {
         },
         title: {
             display: true,
-            text: 'Số lượng xuất hiện trong khu vực theo giờ',
+            text: 'Số lượng người xuất hiện trong khu vực theo giờ',
         },
     },
     scales: {
@@ -126,7 +126,7 @@ function App() {
 
     const datasetBar = [
         {
-            label: 'Số lần xuất hiện trong khung hình',
+            label: 'Số lượng người xuất hiện',
             data: handleHistogramData(dataList),
             backgroundColor: '#f1fd4c',
         },
