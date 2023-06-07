@@ -56,6 +56,7 @@ export const Header = ({ scrollTop }: Header) => {
         const timer = setTimeout(() => {
             setIsClick(false);
         }, 5000);
+
         return () => {
             window.removeEventListener('scroll', () => {});
             clearTimeout(timer);

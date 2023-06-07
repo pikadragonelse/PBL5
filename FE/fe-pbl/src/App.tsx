@@ -37,6 +37,7 @@ function App() {
     const db = getDatabase(app);
     const dbRef_data = ref(db, '/time');
     const dbRef_frame = ref(db, '/frame');
+    const [isFullScreen, setIsFullScreen] = useState<boolean>(false);
 
     useEffect(() => {
         onValue(dbRef_data, (snapshot) => {
@@ -105,10 +106,11 @@ function App() {
 
     return (
         <div ref={appRef} className="app-container">
+            <div className={`overlay ${isFullScreen ? 'show' : ''}`}></div>
             <Header />
             <div className="main-content">
                 <Landing />
-                <section id="cam-view" className="cam-section">
+                <section id="cam-view" className={`cam-section ${isFullScreen ? 'show' : ''}`}>
                     <div className="container-stream">
                         <div className="button-control-container">
                             <button className="btn-control btn-1 btn-top">
@@ -126,20 +128,26 @@ function App() {
                                 <FontAwesomeIcon icon={faArrowDown} />
                             </button>
                         </div>
-                        <div className="cam-container">
-                            <CamHeatMap frame={frame} num_people={num_people} />
+                        <div className={`cam-container `}>
+                            <CamHeatMap frame={frame} num_people={num_people} fullScreen={isFullScreen} />
                         </div>
                     </div>
+                    <button className="btn-full-size btn-cam" onClick={() => setIsFullScreen(false)}>
+                        Out full screen
+                    </button>
                     <div className="content">
                         <h2 className="heading-cam">Camera Control</h2>
                         <p className="desc">
                             With IoT system, the observation system is designed from 1 camera and 2 servo motors. From
                             there, we can admire the entire area where the camera is located.
                         </p>
+                        <button className="btn-full-size" onClick={() => setIsFullScreen(true)}>
+                            Full screen
+                        </button>
                     </div>
                 </section>
 
-                <section id="graph" className="graph">
+                <section id="graph" className={`graph ${isFullScreen ? 'show' : ''}`}>
                     <div className="content">
                         <h2 className="heading-chart">Data visualization</h2>
                         <p className="desc">
@@ -148,7 +156,7 @@ function App() {
                             data more vivid than ever.
                         </p>
                     </div>
-                    <div className="chart-container">
+                    <div className={`chart-container ${isFullScreen ? 'show' : ''}`}>
                         <div className="stream-container">
                             <Stream data={data} options={options} />
                         </div>
@@ -158,13 +166,13 @@ function App() {
                     </div>
                 </section>
 
-                <section id="synthetic" className="mix-container">
+                <section id="synthetic" className={`mix-container ${isFullScreen ? 'show' : ''}`}>
                     <h1 className="heading-mix">Synthetic</h1>
                     <div className="mix">
                         <div className="cam-container">
-                            <CamHeatMap frame={frame} num_people={num_people} />
+                            <CamHeatMap frame={frame} num_people={num_people} fullScreen={false} />
                         </div>
-                        <div className="chart-container">
+                        <div className={`chart-container ${isFullScreen ? 'show' : ''}`}>
                             <div className="stream-container">
                                 <Stream data={data} options={options} />
                             </div>
