@@ -16,7 +16,7 @@ export const data = {
     ],
 };
 
-const WS_URL = 'ws://0.tcp.ap.ngrok.io:16131/get_frame';
+const WS_URL = 'ws://0.tcp.ap.ngrok.io:13608/get_frame';
 
 export const options = {
     plugins: {

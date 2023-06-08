@@ -308,7 +308,21 @@ section.cam-section.show .container-stream{
     right: 0;
     top: -90px;
     opacity: 0;
-    transition: all 0.5s ease;
+    transition: all 0.3s ease;
+}
+
+.btn-heat-map {
+    left: 0;
+    top: -10px;
+    transition: all 0.3s ease;
+    width: 150px;
+}
+
+.btn-volume {
+    left: 0;
+    top: 50px;
+    transition: all 0.3s ease;
+    width: 150px;
 }
 
 .cam-section.show .btn-cam, .graph.show .btn-cam {

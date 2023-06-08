@@ -5,7 +5,7 @@ import { CamHeatMap, data, options } from './component/cam-heatmap/cam-heatmap';
 import { Stream } from './component/line-chart-realtime';
 import { Histogram } from './component/histogram';
 import { initializeApp } from 'firebase/app';
-import { getDatabase, ref, get, onValue } from 'firebase/database';
+import { getDatabase, ref, get, onValue, set } from 'firebase/database';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowDown, faArrowLeft, faArrowRight, faArrowUp } from '@fortawesome/free-solid-svg-icons';
 import { Header } from './component/header';
@@ -14,6 +14,7 @@ import { AboutUs } from './component/about-us';
 import { Footer } from './component/footer';
 import { BarChart } from './component/bar-chart';
 import { motion } from 'framer-motion';
+import 'chartjs-plugin-zoom';
 
 export const firebaseConfig: any = {
     type: 'service_account',
@@ -40,10 +41,26 @@ const optionBar: any = {
             display: true,
             text: 'Số lượng người xuất hiện trong khu vực theo giờ',
         },
+        zoom: {
+            zoom: {
+                wheel: {
+                    enabled: true,
+                },
+                // drag:{
+                //   enabled:true
+                // },
+                mode: 'y',
+                speed: 100,
+            },
+            pan: {
+                enabled: true,
+                mode: 'y',
+                speed: 0.5,
+            },
+        },
     },
     scales: {
         x: {
-            type: 'linear',
             ticks: {
                 stepSize: 1,
             },
@@ -60,6 +77,7 @@ function App() {
     const db = getDatabase(app);
     const dbRef_data = ref(db, '/time');
     const dbRef_frame = ref(db, '/frame');
+    const dbRef_heatmap = ref(db, '/heatmap');
     const [isFullScreen, setIsFullScreen] = useState<boolean>(false);
 
     useEffect(() => {
@@ -125,10 +143,55 @@ function App() {
         },
     ];
 
+    const timeOfficialMap: Record<string, number> = {};
+    const dataBarList: Array<Record<string, any>> = [];
+
+    const handleTime = (time: string) => {
+        const year = time.split('', 4).join('');
+        let temp = time.split('', 6);
+        const month = temp[4] + temp[5];
+        temp = time.split('', 8);
+        const day = temp[6] + temp[7];
+        temp = time.split('', 10);
+        const hour = temp[8] + temp[9];
+
+        return `${year}/${month}/${day} - ${hour}:00`;
+    };
+
+    const [barData, setBarData] = useState<Array<Record<string, any>>>([]);
+
+    useEffect(() => {
+        onValue(dbRef_data, (snapshot) => {
+            try {
+                if (snapshot.exists()) {
+                    const timeArr = Object.keys(snapshot.val());
+                    timeArr.forEach((time) => {
+                        const timeOfficial = handleTime(time);
+
+                        if (timeOfficialMap[timeOfficial] != null) {
+                            timeOfficialMap[timeOfficial] += snapshot.val()[time];
+                        } else {
+                            timeOfficialMap[timeOfficial] = 0;
+                        }
+                    });
+
+                    Object.keys(timeOfficialMap).forEach((item) => {
+                        dataBarList.push({ x: item, y: timeOfficialMap[item] });
+                    });
+
+                    setBarData(dataBarList);
+                } else {
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        });
+    }, []);
+
     const datasetBar = [
         {
             label: 'Số lượng người xuất hiện',
-            data: handleHistogramData(dataList),
+            data: barData,
             backgroundColor: '#f1fd4c',
         },
     ];
@@ -138,6 +201,83 @@ function App() {
     };
 
     const appRef = useRef<HTMLDivElement>(null);
+
+    const [isHeatmap, setIsHeatmap] = useState<boolean>(true);
+
+    useEffect(() => {
+        if (isHeatmap === true) {
+            set(dbRef_heatmap, 'True');
+        }
+        if (isHeatmap === false) {
+            set(dbRef_heatmap, 'False');
+        }
+    }, [isHeatmap]);
+
+    const dbRefServoTop = ref(db, '/servo/top');
+    const dbRefServoBottom = ref(db, '/servo/bottom');
+    const dbRefServoRight = ref(db, '/servo/right');
+    const dbRefServoLeft = ref(db, '/servo/left');
+
+    const [servoTop, setServoTop] = useState<number>(0);
+    const [servoBottom, setServoBottom] = useState<number>(0);
+    const [servoRight, setServoRight] = useState<number>(0);
+    const [servoLeft, setServoLeft] = useState<number>(0);
+
+    const valueMap: Record<any, string> = {
+        true: 'True',
+        false: 'False',
+    };
+
+    useEffect(() => {
+        servoTop !== 0 ? set(dbRefServoTop, 'True') : set(dbRefServoTop, 'False');
+    }, [servoTop]);
+
+    useEffect(() => {
+        servoBottom !== 0 ? set(dbRefServoBottom, 'True') : set(dbRefServoBottom, 'False');
+    }, [servoBottom]);
+
+    useEffect(() => {
+        servoRight !== 0 ? set(dbRefServoRight, 'True') : set(dbRefServoRight, 'False');
+    }, [servoRight]);
+
+    useEffect(() => {
+        servoLeft !== 0 ? set(dbRefServoLeft, 'True') : set(dbRefServoLeft, 'False');
+    }, [servoLeft]);
+
+    const [isVolume, setIsVolume] = useState<boolean>(false);
+    const [isClickVolume, setIsClickVolume] = useState<boolean>(false);
+    const dbRefVolume = ref(db, '/volume');
+
+    const handleClickVolume = () => {
+        setIsVolume((prev) => (prev = !prev));
+        setIsClickVolume(true);
+    };
+
+    useEffect(() => {
+        onValue(dbRefVolume, (snapshot) => {
+            try {
+                if (snapshot.exists() && isClickVolume === false) {
+                    if (snapshot.val() === 'True') {
+                        setIsVolume(true);
+                    }
+                    if (snapshot.val() === 'False') {
+                        setIsVolume(false);
+                    }
+                } else {
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        });
+    }, []);
+
+    useEffect(() => {
+        if (isClickVolume === true) {
+            const value = String(isVolume);
+            set(dbRefVolume, valueMap[value]);
+            setIsClickVolume(false);
+        }
+    }, [isVolume]);
 
     return (
         <div ref={appRef} className="app-container">
@@ -155,18 +295,30 @@ function App() {
                 >
                     <div className="container-stream">
                         <div className="button-control-container">
-                            <button className="btn-control btn-1 btn-top">
+                            <button
+                                className="btn-control btn-1 btn-top"
+                                onClick={() => setServoTop((prev) => (prev = prev + 1))}
+                            >
                                 <FontAwesomeIcon icon={faArrowUp} />
                             </button>
                             <div className="sub-container">
-                                <button className="btn-control btn-2 btn-left">
+                                <button
+                                    className="btn-control btn-2 btn-left"
+                                    onClick={() => setServoLeft((prev) => (prev = prev + 1))}
+                                >
                                     <FontAwesomeIcon icon={faArrowLeft} />
                                 </button>
-                                <button className="btn-control btn-2 btn-right">
+                                <button
+                                    className="btn-control btn-2 btn-right"
+                                    onClick={() => setServoRight((prev) => (prev = prev + 1))}
+                                >
                                     <FontAwesomeIcon icon={faArrowRight} />
                                 </button>
                             </div>
-                            <button className="btn-control btn-1 btn-bottom">
+                            <button
+                                className="btn-control btn-1 btn-bottom"
+                                onClick={() => setServoBottom((prev) => (prev = prev + 1))}
+                            >
                                 <FontAwesomeIcon icon={faArrowDown} />
                             </button>
                         </div>
@@ -176,6 +328,15 @@ function App() {
                     </div>
                     <button className="btn-full-size btn-cam" onClick={() => setIsFullScreen(false)}>
                         Out full screen
+                    </button>
+                    <button
+                        className="btn-full-size btn-cam btn-heat-map"
+                        onClick={() => setIsHeatmap((prev) => (prev = !prev))}
+                    >
+                        {isHeatmap === true ? 'Turn off heatmap' : 'Turn on heatmap'}
+                    </button>
+                    <button className="btn-full-size btn-cam btn-volume" onClick={handleClickVolume}>
+                        {isVolume === true ? 'Turn off volume' : 'Turn on volume'}
                     </button>
                     <div className="content">
                         <h2 className="heading-cam">Camera Control</h2>
