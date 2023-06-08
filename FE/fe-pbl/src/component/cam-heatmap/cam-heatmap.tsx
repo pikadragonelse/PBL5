@@ -16,8 +16,6 @@ export const data = {
     ],
 };
 
-const WS_URL = 'ws://0.tcp.ap.ngrok.io:13608/get_frame';
-
 export const options = {
     plugins: {
         legend: {
@@ -55,8 +53,9 @@ export const options = {
 };
 
 let temp: number = 0;
-export type CamHeatMap = { frame: string; num_people: any; fullScreen: boolean };
-export const CamHeatMap = ({ frame, num_people, fullScreen }: CamHeatMap) => {
+export type CamHeatMap = { fullScreen: boolean; port?: any };
+export const CamHeatMap = ({ fullScreen, port }: CamHeatMap) => {
+    const WS_URL = `ws://0.tcp.ap.ngrok.io:${port}/get_frame`;
     const [message, setMessage] = useState<any>([]);
 
     const { lastMessage, sendMessage } = useWebSocket(WS_URL, {
@@ -79,8 +78,6 @@ export const CamHeatMap = ({ frame, num_people, fullScreen }: CamHeatMap) => {
         sendMessage(JSON.stringify('get_frame'));
         handleMessage();
         draw();
-        console.log(message[2]);
-
         temp = message[1];
     }, [lastMessage]);
 
@@ -104,6 +101,7 @@ export const CamHeatMap = ({ frame, num_people, fullScreen }: CamHeatMap) => {
             };
 
             img.src = 'data:image;base64,' + message[0];
+            console.log(message[0]);
         }
     };
     if (refCanvas.current != null && context != null && context2 != null) {
@@ -113,7 +111,7 @@ export const CamHeatMap = ({ frame, num_people, fullScreen }: CamHeatMap) => {
 
     return (
         <div className={`cam-heatmap-container ${fullScreen === true ? 'full-screen' : ''}`}>
-            <canvas ref={refCanvas} id="canvas" className="canvas-1"></canvas>
+            <canvas ref={refCanvas} id="canvas" className="canvas-1" width={1280} height={720}></canvas>
             <canvas
                 className="canvas-stack-up canvas-2"
                 style={{ position: 'absolute' }}

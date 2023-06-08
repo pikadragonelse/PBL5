@@ -19,12 +19,7 @@ export const Histogram = ({ title, datasets }: Histogram) => {
             },
         },
         scales: {
-            x: {
-                type: 'linear',
-                ticks: {
-                    stepSize: 1,
-                },
-            },
+            x: {},
             y: {},
         },
     };

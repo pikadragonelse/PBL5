@@ -4,7 +4,6 @@ import 'chartjs-plugin-streaming';
 import { CategoryScale, Chart, LinearScale, PointElement, LineElement, Title, Legend, Tooltip } from 'chart.js';
 import { StreamingPlugin, RealTimeScale } from 'chartjs-plugin-streaming';
 import 'chartjs-adapter-luxon';
-import 'chartjs-plugin-zoom';
 
 import './index.scss';
 

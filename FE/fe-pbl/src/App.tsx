@@ -71,48 +71,83 @@ const optionBar: any = {
 
 function App() {
     const [dataList, setDataList] = useState<any>([]);
-    const [frame, setFrame] = useState<any>([]);
-    const [num_people, setNumPeople] = useState<any>([]);
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
     const dbRef_data = ref(db, '/time');
-    const dbRef_frame = ref(db, '/frame');
     const dbRef_heatmap = ref(db, '/heatmap');
+    const dbRef_port = ref(db, '/port');
+
+    const [port, setPort] = useState<string>('');
+
+    useEffect(() => {
+        get(dbRef_port).then((data) => {
+            setPort(data.val());
+        });
+    }, []);
+
     const [isFullScreen, setIsFullScreen] = useState<boolean>(false);
 
-    useEffect(() => {
-        onValue(dbRef_data, (snapshot) => {
-            try {
-                if (
-                    snapshot.exists() &&
-                    Object.entries(snapshot.val()).toString() !== Object.entries(dataList).toString()
-                ) {
-                    setDataList(snapshot.val());
-                    const data = Object.values(snapshot.exportVal());
-                    setNumPeople(data[data.length - 1]);
-                } else {
-                }
-            } catch (error) {
-                console.log(error);
-            }
-        });
-    }, [Object.entries(dataList).toString()]);
+    const timeOfficialMap: Record<string, number> = {};
+    const dataBarList: Array<Record<string, any>> = [];
+
+    const handleTime = (time: string) => {
+        const year = time.split('', 4).join('');
+        let temp = time.split('', 6);
+        const month = temp[4] + temp[5];
+        temp = time.split('', 8);
+        const day = temp[6] + temp[7];
+        temp = time.split('', 10);
+        const hour = temp[8] + temp[9];
+
+        return `${year}/${month}/${day} - ${hour}:00`;
+    };
+
+    const [barData, setBarData] = useState<Array<Record<string, any>>>([]);
 
     useEffect(() => {
-        onValue(dbRef_frame, (snapshot) => {
+        const handleFirebase = async (snapshot: any) => {
+            setDataList(snapshot.val());
+
+            const timeArr = Object.keys(snapshot.val());
+            if (timeArr.length)
+                timeArr.forEach((time) => {
+                    const timeOfficial = handleTime(time);
+
+                    if (timeOfficialMap[timeOfficial] != null) {
+                        timeOfficialMap[timeOfficial] += snapshot.val()[time];
+                    } else {
+                        timeOfficialMap[timeOfficial] = 0;
+                    }
+                });
+
+            Object.keys(timeOfficialMap).forEach((item) => {
+                dataBarList.push({ x: item, y: timeOfficialMap[item] });
+            });
+
+            setBarData(dataBarList);
+            console.log(123);
+        };
+        get(dbRef_data)
+            .then((data) => {
+                if (data.exists()) {
+                    handleFirebase(data);
+                }
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+
+        onValue(dbRef_data, (snapshot) => {
             try {
-                if (
-                    snapshot.exists() &&
-                    Object.entries(snapshot.val()).toString() !== Object.entries(frame).toString()
-                ) {
-                    setFrame(snapshot.val());
+                if (snapshot.exists()) {
+                    handleFirebase(snapshot);
                 } else {
                 }
             } catch (error) {
                 console.log(error);
             }
         });
-    }, [Object.entries(frame).toString()]);
+    }, []);
 
     const handleHistogramData = (dataRaw: any) => {
         const newDataList: any = [];
@@ -134,59 +169,21 @@ function App() {
 
     const dataset = [
         {
-            label: 'Số lần xuất hiện',
-            data: handleHistogramData(dataList),
+            label: 'Số lượng người xuất hiện trong khu vực',
+            data: [
+                { x: 'Khu vực 1', y: 10 },
+                { x: 'Khu vực 2', y: 5 },
+                { x: 'Khu vực 3', y: 8 },
+                { x: 'Khu vực 4', y: 16 },
+                { x: 'Khu vực 5', y: 21 },
+                { x: 'Khu vực 6', y: 13 },
+            ],
             backgroundColor: '#90c5f9',
             borderWidth: 1,
             barPercentage: 1,
             categoryPercentage: 1,
         },
     ];
-
-    const timeOfficialMap: Record<string, number> = {};
-    const dataBarList: Array<Record<string, any>> = [];
-
-    const handleTime = (time: string) => {
-        const year = time.split('', 4).join('');
-        let temp = time.split('', 6);
-        const month = temp[4] + temp[5];
-        temp = time.split('', 8);
-        const day = temp[6] + temp[7];
-        temp = time.split('', 10);
-        const hour = temp[8] + temp[9];
-
-        return `${year}/${month}/${day} - ${hour}:00`;
-    };
-
-    const [barData, setBarData] = useState<Array<Record<string, any>>>([]);
-
-    useEffect(() => {
-        onValue(dbRef_data, (snapshot) => {
-            try {
-                if (snapshot.exists()) {
-                    const timeArr = Object.keys(snapshot.val());
-                    timeArr.forEach((time) => {
-                        const timeOfficial = handleTime(time);
-
-                        if (timeOfficialMap[timeOfficial] != null) {
-                            timeOfficialMap[timeOfficial] += snapshot.val()[time];
-                        } else {
-                            timeOfficialMap[timeOfficial] = 0;
-                        }
-                    });
-
-                    Object.keys(timeOfficialMap).forEach((item) => {
-                        dataBarList.push({ x: item, y: timeOfficialMap[item] });
-                    });
-
-                    setBarData(dataBarList);
-                } else {
-                }
-            } catch (error) {
-                console.log(error);
-            }
-        });
-    }, []);
 
     const datasetBar = [
         {
@@ -323,7 +320,7 @@ function App() {
                             </button>
                         </div>
                         <div className={`cam-container `}>
-                            <CamHeatMap frame={frame} num_people={num_people} fullScreen={isFullScreen} />
+                            <CamHeatMap port={port} fullScreen={isFullScreen} />
                         </div>
                     </div>
                     <button className="btn-full-size btn-cam" onClick={() => setIsFullScreen(false)}>
@@ -383,7 +380,7 @@ function App() {
                             <Stream data={data} options={options} />
                         </div>
                         <div className="histogram-container">
-                            <Histogram title="Mật độ người xuất hiện trong khung hình" datasets={dataset} />
+                            <Histogram title="Số người xuất hiện trong từng khu vực" datasets={dataset} />
                         </div>
                         <div className="bar-container">
                             <BarChart data={dataBar} options={optionBar} />
@@ -406,14 +403,14 @@ function App() {
                     <h1 className="heading-mix">Synthetic</h1>
                     <div className="mix">
                         <div className="cam-container">
-                            <CamHeatMap frame={frame} num_people={num_people} fullScreen={false} />
+                            <CamHeatMap port={port} fullScreen={false} />
                         </div>
                         <div className={`chart-container ${isFullScreen ? 'show' : ''}`}>
                             <div className="stream-container">
                                 <Stream data={data} options={options} />
                             </div>
                             <div className="histogram-container">
-                                <Histogram title="Mật độ người xuất hiện trong khung hình" datasets={dataset} />
+                                <Histogram title="Số người xuất hiện trong từng khu vực" datasets={dataset} />
                             </div>
                         </div>
                     </div>
