@@ -101,7 +101,6 @@ export const CamHeatMap = ({ fullScreen, port }: CamHeatMap) => {
             };
 
             img.src = 'data:image;base64,' + message[0];
-            console.log(message[0]);
         }
     };
     if (refCanvas.current != null && context != null && context2 != null) {
